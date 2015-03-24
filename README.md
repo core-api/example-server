@@ -22,7 +22,7 @@ Clone the repository, then install the requirements and start the web server.
 
 ## Usage
 
-You'll probably want to use the [Python client library][python-client] to interact with the API. See the documentation there for more details.
+You'll probably want to use the [Python client library][python-client] to interact with the API.
 
     >>> import coreapi
     >>> doc = coreapi.get('http://127.0.0.1:3000/')
