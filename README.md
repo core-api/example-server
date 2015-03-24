@@ -31,7 +31,9 @@ You'll probably want to use the [Python client library][python-client] to intera
         'notes': [],
         'add_note': link(description)
 
-You can now explore and interact with the API. See the [Python client library documentation][python-client] for more details.
+You can now explore and interact with the API.
+
+See the [Python client library documentation][python-client] for more details.
 
 [flask]: http://flask.pocoo.org/
 [server-source-code]: https://github.com/core-api/example-server/blob/master/server.py
