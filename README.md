@@ -1,6 +1,6 @@
 # Example Core API  server
 
-This is an example Core API service, that demonstrates implementing a simple To-Do note API.
+This is an example [Core API][core-api] service, that demonstrates implementing a simple To-Do note API.
 
 It is written in Python, using [the Flask web framework][flask].
 
@@ -35,6 +35,7 @@ You can now explore and interact with the API.
 
 See the [Python client library documentation][python-client] for more details.
 
+[core-api]: https://github.com/core-api/core-api
 [flask]: http://flask.pocoo.org/
 [server-source-code]: https://github.com/core-api/example-server/blob/master/server.py
 [python-client]: https://github.com/core-api/python-client
