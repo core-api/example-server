@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from coreapi import Document, Link, dump, required
+from coreapi import Document, Link, Error, dump, required
 from flask import Flask, Response, request
 import uuid
 
@@ -73,7 +73,9 @@ def note_detail(identifier):
     global notes
 
     if identifier not in notes:
-        return Response(status=404)
+        error = Error(['This note no longer exists.'])
+        content = dump(error)
+        return Response(content, status=404, mimetype='application/json')
 
     if request.method == 'DELETE':
         del notes[identifier]
