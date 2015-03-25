@@ -61,7 +61,7 @@ def note_list():
         }
 
     doc = get_notes()
-    content = dump(doc)
+    content = dump(doc, verbose=True)
     return Response(content, mimetype='application/json')
 
 
@@ -74,7 +74,7 @@ def note_detail(identifier):
 
     if identifier not in notes:
         error = Error(['This note no longer exists.'])
-        content = dump(error)
+        content = dump(error, verbose=True)
         return Response(content, status=404, mimetype='application/json')
 
     if request.method == 'DELETE':
