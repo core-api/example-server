@@ -61,8 +61,9 @@ def note_list():
         }
 
     doc = get_notes()
-    content = dump(doc, verbose=True)
-    return Response(content, mimetype='application/json')
+    accept = request.headers.get('Accept')
+    content_type, content = dump(doc, accept=accept, verbose=True)
+    return Response(content, mimetype=content_type)
 
 
 @app.route('/<identifier>', methods=['GET', 'PUT', 'DELETE'])
@@ -90,8 +91,9 @@ def note_detail(identifier):
             note['complete'] = bool(data['complete'])
 
     doc = get_note(identifier)
-    content = dump(doc)
-    return Response(content, mimetype='application/json')
+    accept = request.headers.get('Accept')
+    content_type, content = dump(doc, accept=accept, verbose=True)
+    return Response(content, mimetype=content_type)
 
 
 if __name__ == '__main__':
