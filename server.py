@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from coreapi import Document, Link, Error, dump, required
+from coreapi import Document, Link, Error, Field, dump
 from flask import Flask, Response, request
 import uuid
 
@@ -23,7 +23,7 @@ def get_notes():
                 get_note(identifier)
                 for identifier in reversed(notes.keys())
             ],
-            'add_note': Link(action='post', fields=[required('description')])
+            'add_note': Link(action='post', fields=[Field('description', required=True)])
         }
     )
 
