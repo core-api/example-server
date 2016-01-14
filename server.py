@@ -23,7 +23,7 @@ def get_notes():
                 get_note(identifier)
                 for identifier in reversed(notes.keys())
             ],
-            'add_note': Link(trans='action', fields=[Field('description', required=True)])
+            'add_note': Link(action='post', fields=[Field('description', required=True)])
         }
     )
 
@@ -39,8 +39,8 @@ def get_note(identifier):
         content={
             'description': note['description'],
             'complete': note['complete'],
-            'edit': Link(trans='update', fields=['description', 'complete']),
-            'delete': Link(trans='delete')
+            'edit': Link(action='put', fields=['description', 'complete']),
+            'delete': Link(action='delete')
         }
     )
 
@@ -62,8 +62,8 @@ def note_list():
 
     doc = get_notes()
     accept = request.headers.get('Accept')
-    content_type, content = dump(doc, accept=accept, verbose=True)
-    return Response(content, mimetype=content_type)
+    media_type, content = dump(doc, accept=accept)
+    return Response(content, mimetype=media_type)
 
 
 @app.route('/<identifier>', methods=['GET', 'PUT', 'DELETE'])
@@ -75,7 +75,7 @@ def note_detail(identifier):
 
     if identifier not in notes:
         error = Error(['This note no longer exists.'])
-        content = dump(error, verbose=True)
+        content = dump(error)
         return Response(content, status=404, mimetype='application/json')
 
     if request.method == 'DELETE':
@@ -92,8 +92,8 @@ def note_detail(identifier):
 
     doc = get_note(identifier)
     accept = request.headers.get('Accept')
-    content_type, content = dump(doc, accept=accept, verbose=True)
-    return Response(content, mimetype=content_type)
+    media_type, content = dump(doc, accept=accept)
+    return Response(content, mimetype=media_type)
 
 
 if __name__ == '__main__':
