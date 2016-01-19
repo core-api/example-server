@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from coreapi import Document, Link, Error, dump, required
+from coreapi import Document, Link, Error, dump
 from flask import Flask, Response, request
 import uuid
 
@@ -23,7 +23,7 @@ def get_notes():
                 get_note(identifier)
                 for identifier in reversed(notes.keys())
             ],
-            'add_note': Link(action='post', fields=[required('description')])
+            'add_note': Link(action='post', fields=[Field(name='description', required=True)])
         }
     )
 
@@ -39,7 +39,7 @@ def get_note(identifier):
         content={
             'description': note['description'],
             'complete': note['complete'],
-            'edit': Link(action='put', fields=['description', 'complete']),
+            'edit': Link(action='put', fields=[Field(name='description'), Field(name='complete')]),
             'delete': Link(action='delete')
         }
     )
@@ -74,7 +74,10 @@ def note_detail(identifier):
     global notes
 
     if identifier not in notes:
-        error = Error(['This note no longer exists.'])
+        error = Error(
+            title='Not found',
+            content={'messages': ['This note no longer exists.']}
+        )
         content = dump(error)
         return Response(content, status=404, mimetype='application/json')
 
