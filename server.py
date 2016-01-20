@@ -78,8 +78,9 @@ def note_detail(identifier):
             title='Not found',
             content={'messages': ['This note no longer exists.']}
         )
-        content = dump(error)
-        return Response(content, status=404, mimetype='application/json')
+        accept = request.headers.get('Accept')
+        media_type, content = dump(error, accept=accept)
+        return Response(content, status=404, mimetype=media_type)
 
     if request.method == 'DELETE':
         del notes[identifier]
