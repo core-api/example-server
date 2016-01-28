@@ -1,10 +1,17 @@
 from collections import OrderedDict
 from coreapi import Document, Link, Error, Field, dump
 from flask import Flask, Response, request
+from flask_sockets import Sockets
+import json
+import jsonpatch
+import time
 import uuid
 
 
 app = Flask(__name__)
+sockets = Sockets(app)
+clients = []
+
 
 # We store all the notes in a mapping of UUIDs to dictionary instances.
 # In a real system we would be using a database or other persistent backend.
@@ -59,6 +66,7 @@ def note_list():
             'description': str(data['description']),
             'complete': False
         }
+        notify_clients()
 
     doc = get_notes()
     accept = request.headers.get('Accept')
@@ -84,6 +92,7 @@ def note_detail(identifier):
 
     if request.method == 'DELETE':
         del notes[identifier]
+        notify_clients()
         return Response(status=204)
 
     elif request.method == 'PUT':
@@ -93,11 +102,51 @@ def note_detail(identifier):
             note['description'] = str(data['description'])
         if 'complete' in data:
             note['complete'] = bool(data['complete'])
+        notify_clients()
 
     doc = get_note(identifier)
     accept = request.headers.get('Accept')
     media_type, content = dump(doc, accept=accept)
     return Response(content, mimetype=media_type)
+
+
+# WebSockets
+
+@sockets.route('/live')
+def echo_socket(ws):
+    message = ws.receive()
+    doc = get_notes()
+    media_type, content = dump(doc, accept='application/vnd.coreapi+json')
+    data = json.loads(content)
+    ws.send('Content-Type: application/vnd.coreapi+json\n\n' + content)
+    clients.append((ws, data))
+    while True:
+        time.sleep(1)
+
+
+def notify_clients():
+    global clients
+
+    if not clients:
+        return
+
+    doc = get_notes()
+
+    media_type, next_content = dump(doc, accept='application/vnd.coreapi+json')
+    next_data = json.loads(next_content)
+    new_clients = []
+    print 'Sending message to %d clients' % len(clients)
+    for (client, previous_data) in list(clients):
+        if next_data == previous_data:
+            continue
+        patch = jsonpatch.make_patch(previous_data, next_data).to_string()
+        try:
+            client.send(patch)
+        except:
+            print 'Client left'
+        else:
+            new_clients.append((client, next_data))
+    clients = new_clients
 
 
 if __name__ == '__main__':

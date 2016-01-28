@@ -15,7 +15,7 @@ The source code is contained in the `server.py` module, and can be [viewed here]
 Clone the repository, then install the requirements and start the web server.
 
     $ pip install -r requirements.txt
-    $ python ./server.py
+    $ gunicorn -k flask_sockets.worker server:app
      * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
 
 ---
